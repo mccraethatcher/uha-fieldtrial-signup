@@ -349,6 +349,7 @@ function submitForm(){
       showMsg('Timed out — entry saved to queue. Tap "Send Now" in the queue banner.','queued');
       recent.unshift({...entry,_sent:false});
       localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
+      renderRecent();
       clearForm();
     }
   },5000);
@@ -366,7 +367,12 @@ function submitForm(){
       recent.unshift({...entry,_sent:ok});
       if(recent.length>30)recent.pop();
       localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
+    } else {
+      // Entry already exists (failsafe fired first) — update its _sent flag
+      const ri=recent.findIndex(r=>r.id===entry.id);
+      if(ri>=0&&ok){recent[ri]._sent=true;localStorage.setItem(RECENT_KEY,JSON.stringify(recent));}
     }
+    renderRecent();
     clearForm();
   }).catch(()=>{
     clearTimeout(failsafe);
@@ -376,6 +382,7 @@ function submitForm(){
       showMsg(`Saved locally — will send when connected.`,'queued');
       recent.unshift({...entry,_sent:false});
       localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
+      renderRecent();
     }
     clearForm();
   });
@@ -442,7 +449,19 @@ function flushQueue(){
   Promise.all(send.map(e=>sendEntry(e))).then(res=>{
     const failed=send.filter((_,i)=>!res[i]&&!alreadySent(send[i].id));
     if(failed.length){queue=[...queue,...failed];saveQueue();updateQBanner();renderQueueDetail();}
-    else if(send.length) showMsg(`✓ ${send.length} queued entr${send.length===1?'y':'ies'} sent!`,'ok');
+    // Update _sent on any successfully sent entries in the recent list
+    let recentChanged=false;
+    send.forEach((e,i)=>{
+      if(res[i]||alreadySent(e.id)){
+        const ri=recent.findIndex(r=>r.id===e.id);
+        if(ri>=0&&!recent[ri]._sent){recent[ri]._sent=true;recentChanged=true;}
+      }
+    });
+    if(recentChanged){
+      localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
+      renderRecent();
+    }
+    if(!failed.length&&send.length)showMsg(`✓ ${send.length} queued entr${send.length===1?'y':'ies'} sent!`,'ok');
   });
 }
 function clearQueue(){if(confirm('Clear all queued entries?')){queue=[];saveQueue();updateQBanner();renderQueueDetail();}}
