@@ -162,13 +162,16 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
   <div class="card">
     <div class="card-title">⚙️ Google Sheets Connection</div>
     <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">Registrations post to Google Sheets automatically when online. When offline, they queue and send when WiFi returns.</div>
+    <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:12px;">
+      <strong style="color:var(--green);">✓ Pre-configured</strong> — the Apps Script URL is already set. Tap <strong>Test Connection</strong> to verify it's working.
+    </div>
     <div class="fg" style="margin-bottom:12px;">
-      <label>Apps Script Web App URL</label>
-      <input class="fi" id="su-url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:13px;font-family:monospace;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <label>Apps Script URL <span style="font-weight:400;color:var(--text2);font-size:11px;">(tap to update if redeployed)</span></label>
+      <input class="fi" id="su-url" style="font-size:11px;font-family:monospace;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn-sm" onclick="saveUrl()" style="background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;">Save URL</button>
-      <button class="btn-sm" onclick="testConn()">Test Connection</button>
+      <button class="btn-sm" onclick="testConn()" style="background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;">Test Connection</button>
+      <button class="btn-sm" onclick="saveUrl()">Update URL</button>
     </div>
     <div id="url-msg" style="margin-top:10px;font-size:12px;color:var(--text2);min-height:18px;"></div>
   </div>
@@ -180,29 +183,22 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
       <button class="btn-sm btn-danger" onclick="clearQueue()">Clear Queue</button>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title">📋 Setup Steps</div>
-    <div style="font-size:13px;line-height:1.8;color:var(--text2);">
-      <div style="margin-bottom:10px;"><span style="background:var(--accent);color:#000;font-weight:700;padding:2px 8px;border-radius:20px;font-size:11px;">1</span> &nbsp;Go to <strong style="color:var(--text);">sheets.google.com</strong> — create a new blank spreadsheet — copy the ID from the URL.</div>
-      <div style="margin-bottom:10px;"><span style="background:var(--accent);color:#000;font-weight:700;padding:2px 8px;border-radius:20px;font-size:11px;">2</span> &nbsp;Go to <strong style="color:var(--text);">script.google.com</strong> → New Project → paste the Apps Script code → replace the Sheet ID.</div>
-      <div style="margin-bottom:10px;"><span style="background:var(--accent);color:#000;font-weight:700;padding:2px 8px;border-radius:20px;font-size:11px;">3</span> &nbsp;Click <strong style="color:var(--text);">Deploy → New Deployment → Web App</strong> → Who has access: <strong style="color:var(--text);">Anyone</strong> → Deploy → copy URL.</div>
-      <div><span style="background:var(--accent);color:#000;font-weight:700;padding:2px 8px;border-radius:20px;font-size:11px;">4</span> &nbsp;Paste the URL above and tap <strong style="color:var(--text);">Save URL</strong>. Done!</div>
-    </div>
-  </div>
 </div></div>
 
 <script>
 const EVENTS=['Puppy','Junior','Senior','Over the Hill','Youth/Female'];
 const SPECIAL=[{k:'treeing',l:'Treeing Contest'},{k:'ironDog',l:'Iron Dog'},{k:'bearDrag',l:'Bear Drag'}];
 const URL_KEY='uha_ipad_url',QUEUE_KEY='uha_ipad_queue',RECENT_KEY='uha_ipad_recent';
-let scriptUrl=localStorage.getItem(URL_KEY)||'';
+const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxg_st10vham2R8l4TcXDejF-r77pOVJ04XE9XPNxdpPPcuOUuAlPe_YG9eh0gHHahooQ/exec';
+// Use saved override if set, otherwise fall back to hardcoded default
+let scriptUrl=localStorage.getItem(URL_KEY)||DEFAULT_URL;
 let queue=JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]');
 let recent=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
 let dogCount=1,packCount=0;
 
 function init(){
   addDog();
-  if(scriptUrl)document.getElementById('su-url').value=scriptUrl;
+  if(document.getElementById('su-url'))document.getElementById('su-url').value=scriptUrl;
   updateQBanner();renderRecent();renderQueueDetail();checkConn();
   setInterval(checkConn,20000);setInterval(flushQueue,45000);
 }
@@ -485,9 +481,11 @@ function clearForm(){
 }
 
 function saveUrl(){
-  const v=document.getElementById('su-url').value.trim();
-  if(!v||!v.startsWith('http')){setUrlMsg('Enter a valid URL.','red');return;}
-  scriptUrl=v;localStorage.setItem(URL_KEY,v);setUrlMsg('✓ URL saved!','green');checkConn();
+  const v=(document.getElementById('su-url').value||'').trim();
+  if(!v||!v.startsWith('http')){setUrlMsg('Enter a valid URL starting with https://','red');return;}
+  if(v===DEFAULT_URL){setUrlMsg('That is already the default URL — no change needed.','green');return;}
+  scriptUrl=v;localStorage.setItem(URL_KEY,v);
+  setUrlMsg('✓ URL updated! Tap Test Connection to verify.','green');checkConn();
 }
 function testConn(){
   if(!scriptUrl){setUrlMsg('Save a URL first.','orange');return;}
