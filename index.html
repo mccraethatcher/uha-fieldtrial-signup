@@ -1,3 +1,12 @@
+<!--
+  ============================================================
+  UHA Field Trials — iPad Sign-Up Form
+  Designed & Developed by April Thatcher
+  2026
+  Donated to the Utah Houndsmen Association.
+  All original design and development credit retained by April Thatcher.
+  ============================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +71,8 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
 .q-banner.hidden{display:none;}
 .cost-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
 .cost-row:last-child{border-bottom:none;}
-.cost-total{display:flex;justify-content:space-between;padding:10px 0 0;font-size:16px;font-weight:700;color:var(--accent);}
+.cost-total{display:flex;justify-content:space-between;padding:10px 0 0;font-size:18px;font-weight:800;color:var(--accent);}
+.price-tag{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
 .recent-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
 .rdot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;}
 .rdot.pend{background:var(--accent);}
@@ -81,6 +91,7 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
   <button class="tab active" onclick="switchTab('register',this)">📋 Register</button>
   <button class="tab" onclick="switchTab('recent',this)">✅ Submitted</button>
   <button class="tab" onclick="switchTab('setup',this)">⚙️ Setup</button>
+  <button class="tab" onclick="switchTab('about',this)">ℹ About</button>
 </div>
 <div class="wrap" style="padding-bottom:0;">
   <div class="q-banner hidden" id="qBanner">
@@ -115,14 +126,14 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
 </div>
 
 <div class="card">
-  <div class="card-title">🪪 UHA Membership</div>
-  <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Add members purchasing a UHA membership. Click to add each person — multiple members can be added under one registration.</div>
+  <div class="card-title">🪪 UHA Membership <span style="font-size:13px;font-weight:400;color:var(--accent);">— $35 household</span></div>
+  <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Add all members in your household — flat $35 per family regardless of how many members.</div>
   <div id="ipad-mem-list"></div>
   <button class="btn-sm" onclick="ipadAddMember()" id="addMemBtn">+ Add Member</button>
 </div>
 
 <div class="card">
-  <div class="card-title">Five Dog Bear Pack</div>
+  <div class="card-title">Five Dog Bear Pack <span style="font-size:13px;font-weight:400;color:var(--accent);">— $75 per pack</span></div>
   <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">All 5 dogs must cross and tree to qualify. Fastest time wins. Register up to 5 packs.</div>
   <div id="pack-list"></div>
   <button class="btn-sm" onclick="addPack()" id="addPackBtn">+ Register a Bear Pack</button>
@@ -132,8 +143,9 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
   <div class="card-title">🐕 Dog Registration</div>
   <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.7;">
     <strong style="color:var(--text);">Puppy</strong> — under 1 yr &nbsp;|&nbsp; <strong style="color:var(--text);">Junior</strong> — never trophied in UHA &nbsp;|&nbsp; <strong style="color:var(--text);">Senior</strong> — any dog<br>
-    <strong style="color:var(--text);">Over the Hill</strong> — 8+ yrs &nbsp;|&nbsp; <strong style="color:var(--text);">Youth/Female</strong> — under 16, female, or MOH approved<br>
-    <strong style="color:var(--text);">Treeing</strong> — barks in 60 sec &nbsp;|&nbsp; <strong style="color:var(--text);">Iron Dog</strong> — last in circle, 50/50 &nbsp;|&nbsp; <strong style="color:var(--text);">Bear Drag</strong> — 50/50
+    <strong style="color:var(--text);">Over the Hill</strong> — 8+ yrs &nbsp;|&nbsp; <strong style="color:var(--text);">Youth</strong> — under 16, female, or MOH approved<br>
+    <strong style="color:var(--text);">Treeing</strong> — barks in 60 sec &nbsp;|&nbsp; <strong style="color:var(--text);">Iron Dog</strong> — last in circle, 50/50 &nbsp;|&nbsp; <strong style="color:var(--text);">Bear Drag</strong> — 50/50<br>
+    <span style="color:var(--accent);font-weight:700;">Heat Events $10 · Bear Drag $30 · Iron Dog $25 · Treeing $10</span>
   </div>
   <div id="dog-list"></div>
   <button class="btn-sm" onclick="addDog()" id="addDogBtn">+ Add Another Dog</button>
@@ -142,6 +154,15 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
 <div class="card">
   <div class="card-title">📝 Notes</div>
   <textarea class="fi" id="f-notes" placeholder="Special requests, additional info..."></textarea>
+</div>
+
+<div class="card" id="cost-card" style="background:rgba(180,83,9,.06);border-color:rgba(180,83,9,.3);">
+  <div class="card-title" style="margin-bottom:10px;">💰 Registration Total</div>
+  <div id="cost-lines" style="margin-bottom:8px;"></div>
+  <div class="cost-total">
+    <span>Total Due</span>
+    <span id="cost-total-val">$0</span>
+  </div>
 </div>
 
 <button class="btn-primary" id="submitBtn" onclick="submitForm()">✓ Submit Registration</button>
@@ -185,12 +206,38 @@ textarea.fi{min-height:70px;resize:vertical;font-size:15px;}
   </div>
 </div></div>
 
+<!-- ABOUT TAB -->
+<div id="tab-about" class="tab-panel"><div class="wrap">
+  <div class="card" style="text-align:center;padding:36px 24px;">
+    <div style="font-size:48px;margin-bottom:14px;">🐾</div>
+    <div style="font-size:20px;font-weight:700;color:var(--accent);margin-bottom:4px;">UHA Field Trials</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:24px;">iPad Sign-Up Form</div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:20px;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:8px;">Designed &amp; Developed by</div>
+      <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;">April Thatcher</div>
+      <div style="font-size:12px;color:var(--text2);">2026</div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:18px;">
+      This application was designed and developed by April Thatcher<br>
+      and donated to the <strong>Utah Houndsmen Association</strong><br>
+      for use in managing their field trial events.
+    </div>
+    <div style="font-size:11px;color:var(--text3);">All original design and development credit retained by April Thatcher.</div>
+  </div>
+</div></div>
+
+<!-- Footer Credit -->
+<div style="text-align:center;padding:16px 18px 30px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:10px;">
+  Designed &amp; developed by <strong style="color:var(--text2);">April Thatcher</strong> &nbsp;·&nbsp; Donated to the Utah Houndsmen Association &nbsp;·&nbsp; &copy; 2026
+</div>
+
 <script>
-const EVENTS=['Puppy','Junior','Senior','Over the Hill','Youth/Female'];
-const SPECIAL=[{k:'treeing',l:'Treeing Contest'},{k:'ironDog',l:'Iron Dog'},{k:'bearDrag',l:'Bear Drag'}];
+const EVENTS=['Puppy','Junior','Senior','Over the Hill','Youth'];
+const EVENTS_LABEL={'Puppy':'Puppy','Junior':'Junior','Senior':'Senior','Over the Hill':'Over the Hill','Youth':'Youth'};
+const SPECIAL=[{k:'treeing',l:'Treeing Contest',price:10},{k:'ironDog',l:'Iron Dog',price:25},{k:'bearDrag',l:'Bear Drag',price:30}];
+const PRICES={heat:10,bearPack:75,membership:35,treeing:10,ironDog:25,bearDrag:30};
 const URL_KEY='uha_ipad_url',QUEUE_KEY='uha_ipad_queue',RECENT_KEY='uha_ipad_recent';
 const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxg_st10vham2R8l4TcXDejF-r77pOVJ04XE9XPNxdpPPcuOUuAlPe_YG9eh0gHHahooQ/exec';
-// Use saved override if set, otherwise fall back to hardcoded default
 let scriptUrl=localStorage.getItem(URL_KEY)||DEFAULT_URL;
 let queue=JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]');
 let recent=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
@@ -199,7 +246,7 @@ let dogCount=1,packCount=0;
 function init(){
   addDog();
   if(document.getElementById('su-url'))document.getElementById('su-url').value=scriptUrl;
-  updateQBanner();renderRecent();renderQueueDetail();checkConn();
+  updateQBanner();renderRecent();renderQueueDetail();checkConn();calcCost();
   setInterval(checkConn,20000);setInterval(flushQueue,45000);
 }
 
@@ -225,15 +272,18 @@ function addDog(){
   div.className='dog-block';div.id=`dog-${n}`;
   div.innerHTML=`<div class="dog-num">Dog #${n}</div>
     <div class="row" style="margin-bottom:10px;">
-      <div class="fg"><label>Handler's Name</label><input class="fi" id="d${n}-h" placeholder="Handler name" style="font-size:15px;"></div>
-      <div class="fg"><label>Dog's Name *</label><input class="fi" id="d${n}-d" placeholder="Dog name" style="font-size:15px;"></div>
+      <div class="fg"><label>Handler\'s Name</label><input class="fi" id="d${n}-h" placeholder="Handler name" style="font-size:15px;" oninput="calcCost()"></div>
+      <div class="fg"><label>Dog\'s Name *</label><input class="fi" id="d${n}-d" placeholder="Dog name" style="font-size:15px;" oninput="calcCost()"></div>
     </div>
-    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Select Events</div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Heat Events <span style="font-weight:400;color:var(--accent);">$10 each</span></div>
+    <div class="dog-events" style="margin-bottom:10px;">
+      ${EVENTS.map(ev=>`<label class="dog-ev" onclick="toggleEv(this);calcCost()"><input type="checkbox" value="${ev}"> ${EVENTS_LABEL[ev]}</label>`).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Special Events</div>
     <div class="dog-events">
-      ${EVENTS.map(ev=>`<label class="dog-ev" onclick="toggleEv(this)"><input type="checkbox" value="${ev}"> ${ev}</label>`).join('')}
-      ${SPECIAL.map(sp=>`<label class="dog-ev" onclick="toggleEv(this)" style="border-color:rgba(139,92,246,.3);color:var(--text2);"><input type="checkbox" value="${sp.k}"> ${sp.l}</label>`).join('')}
+      ${SPECIAL.map(sp=>`<label class="dog-ev" onclick="toggleEv(this);calcCost()" style="border-color:rgba(139,92,246,.3);color:var(--text2);"><input type="checkbox" value="${sp.k}"> ${sp.l} <span class="price-tag">$${sp.price}</span></label>`).join('')}
     </div>
-    ${n>1?`<button class="btn-sm btn-danger" onclick="removeDog(${n})" style="margin-top:10px;font-size:12px;">Remove Dog</button>`:''}`;
+    ${n>1?`<button class="btn-sm btn-danger" onclick="removeDog(${n});calcCost()" style="margin-top:10px;font-size:12px;">Remove Dog</button>`:''}`;
   document.getElementById('dog-list').appendChild(div);
   if(dogCount>11)document.getElementById('addDogBtn').style.display='none';
 }
@@ -242,17 +292,15 @@ function toggleEv(label){setTimeout(()=>{label.classList.toggle('on',label.query
 
 let ipadMemCount=0;
 function ipadAddMember(){
-  ipadMemCount++;
-  const n=ipadMemCount;
-  const div=document.createElement('div');
-  div.id=`ipad-mem-${n}`;
+  ipadMemCount++;const n=ipadMemCount;
+  const div=document.createElement('div');div.id=`ipad-mem-${n}`;
   div.style.cssText='display:flex;gap:8px;margin-bottom:10px;align-items:flex-end;';
   div.innerHTML=`
-    <div class="fg"><label>First Name</label><input class="fi" id="im-f${n}" placeholder="First" style="font-size:16px;"></div>
-    <div class="fg"><label>Last Name</label><input class="fi" id="im-l${n}" placeholder="Last" style="font-size:16px;"></div>
-    <button onclick="document.getElementById('ipad-mem-${n}').remove()" style="background:none;border:1.5px solid #e5e7eb;border-radius:10px;padding:12px 14px;cursor:pointer;color:#ef4444;font-size:18px;flex-shrink:0;margin-bottom:1px;">✕</button>`;
+    <div class="fg"><label>First Name</label><input class="fi" id="im-f${n}" placeholder="First" style="font-size:16px;" oninput="calcCost()"></div>
+    <div class="fg"><label>Last Name</label><input class="fi" id="im-l${n}" placeholder="Last" style="font-size:16px;" oninput="calcCost()"></div>
+    <button onclick="document.getElementById('ipad-mem-${n}').remove();calcCost()" style="background:none;border:1.5px solid #e5e7eb;border-radius:10px;padding:12px 14px;cursor:pointer;color:#ef4444;font-size:18px;flex-shrink:0;margin-bottom:1px;">\u2715</button>`;
   document.getElementById('ipad-mem-list').appendChild(div);
-  document.getElementById(`im-f${n}`).focus();
+  document.getElementById(`im-f${n}`).focus();calcCost();
 }
 function collectIpadMembers(){
   const members=[];
@@ -260,21 +308,15 @@ function collectIpadMembers(){
     const id=div.id.replace('ipad-mem-','');
     const f=(document.getElementById(`im-f${id}`)||{}).value||'';
     const l=(document.getElementById(`im-l${id}`)||{}).value||'';
-    const name=(f.trim()+' '+l.trim()).trim();
-    if(name)members.push(name);
-  });
-  return members;
+    const name=(f.trim()+' '+l.trim()).trim();if(name)members.push(name);
+  });return members;
 }
 
 function addPack(){
-  if(packCount>=5)return;
-  const n=++packCount;
-  const div=document.createElement('div');
-  div.className='pack-block';div.id=`pack-${n}`;
+  if(packCount>=5)return;const n=++packCount;
+  const div=document.createElement('div');div.className='pack-block';div.id=`pack-${n}`;
   div.innerHTML=`<div class="shdr" style="margin-top:0;">Bear Pack ${n}</div>
-    <div class="row" style="margin-bottom:10px;">
-      <div class="fg"><label>Pack Name *</label><input class="fi" id="p${n}-name" placeholder="e.g. Southern Pack" style="font-size:15px;" oninput="onPackName(${n})"></div>
-    </div>
+    <div class="row" style="margin-bottom:10px;"><div class="fg"><label>Pack Name *</label><input class="fi" id="p${n}-name" placeholder="e.g. Southern Pack" style="font-size:15px;" oninput="onPackName(${n});calcCost()"></div></div>
     <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">5 Dog Names</div>
     <div class="row" style="margin-bottom:8px;"><div class="fg"><label>Dog 1 Name</label><input class="fi" id="p${n}-dog1" placeholder="Dog name" style="font-size:15px;"></div></div>
     <div class="row" style="margin-bottom:8px;"><div class="fg"><label>Dog 2 Name</label><input class="fi" id="p${n}-dog2" placeholder="Dog name" style="font-size:15px;"></div></div>
@@ -283,15 +325,38 @@ function addPack(){
     <div class="row" style="margin-bottom:8px;"><div class="fg"><label>Dog 5 Name</label><input class="fi" id="p${n}-dog5" placeholder="Dog name" style="font-size:15px;"></div></div>
     <button class="btn-sm btn-danger" onclick="removePack(${n})" style="margin-top:4px;font-size:12px;">Remove Pack ${n}</button>`;
   document.getElementById('pack-list').appendChild(div);
-  if(packCount>=5)document.getElementById('addPackBtn').style.display='none';
-  calcCost();
+  if(packCount>=5)document.getElementById('addPackBtn').style.display='none';calcCost();
 }
-function removePack(n){const el=document.getElementById(`pack-${n}`);if(el){el.remove();packCount=Math.max(0,packCount-1);document.getElementById('addPackBtn').style.display='';}}
+function removePack(n){const el=document.getElementById(`pack-${n}`);if(el){el.remove();packCount=Math.max(0,packCount-1);document.getElementById('addPackBtn').style.display='';calcCost();}}
 function onPackName(n){const el=document.getElementById(`pack-${n}`),v=(document.getElementById(`p${n}-name`)||{}).value||'';if(el)el.classList.toggle('filled',!!v.trim());}
-
 function toggleChk(label){setTimeout(()=>{label.classList.toggle('on',label.querySelector('input').checked);},0);}
 
-function calcCost(){}
+function calcCost(){
+  let total=0;const lines=[];
+  const members=collectIpadMembers();
+  if(members.length){total+=PRICES.membership;lines.push({label:`Membership (${members.length} member${members.length>1?'s':''}) — $35 household`,amt:PRICES.membership});}
+  document.querySelectorAll('.dog-block').forEach(b=>{
+    const n=b.id.split('-')[1];
+    const dog=(document.getElementById(`d${n}-d`)||{}).value.trim();if(!dog)return;
+    const ons=[...b.querySelectorAll('.dog-ev.on input')].map(i=>i.value);
+    const heatEvs=ons.filter(e=>EVENTS.includes(e)).length;
+    const hasDrag=ons.includes('bearDrag'),hasIron=ons.includes('ironDog'),hasTree=ons.includes('treeing');
+    if(heatEvs){total+=heatEvs*PRICES.heat;lines.push({label:`${dog}: ${heatEvs} heat event${heatEvs>1?'s':''}`,amt:heatEvs*PRICES.heat});}
+    if(hasDrag){total+=PRICES.bearDrag;lines.push({label:`${dog}: Bear Drag`,amt:PRICES.bearDrag});}
+    if(hasIron){total+=PRICES.ironDog;lines.push({label:`${dog}: Iron Dog`,amt:PRICES.ironDog});}
+    if(hasTree){total+=PRICES.treeing;lines.push({label:`${dog}: Treeing Contest`,amt:PRICES.treeing});}
+  });
+  for(let i=1;i<=5;i++){
+    const nameEl=document.getElementById(`p${i}-name`);if(!nameEl)continue;
+    const pname=nameEl.value.trim();if(!pname)continue;
+    total+=PRICES.bearPack;lines.push({label:`Bear Pack: "${pname}"`,amt:PRICES.bearPack});
+  }
+  const linesEl=document.getElementById('cost-lines');
+  const totalEl=document.getElementById('cost-total-val');
+  if(linesEl)linesEl.innerHTML=lines.length?lines.map(l=>`<div class="cost-row"><span>${l.label}</span><span style="font-weight:700;">$${l.amt}</span></div>`).join(''):'<div style="font-size:13px;color:var(--text3);">No items selected yet.</div>';
+  if(totalEl)totalEl.textContent=`$${total}`;
+  return total;
+}
 
 function submitForm(){
   const first=document.getElementById('f-first').value.trim();
@@ -299,169 +364,89 @@ function submitForm(){
   const phone=document.getElementById('f-phone').value.trim();
   if(!first||!last){showMsg('First and last name are required.','err');return;}
   if(!phone){showMsg('Phone number is required.','err');return;}
-
-  // collect dogs
+  const street=document.getElementById('f-street').value.trim();
+  const city=document.getElementById('f-city').value.trim();
+  const state=document.getElementById('f-state').value.trim();
+  const zip=document.getElementById('f-zip').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const address=[street,city,state,zip].filter(Boolean).join(', ');
   const dogs=[];
   document.querySelectorAll('.dog-block').forEach(b=>{
     const n=b.id.split('-')[1];
     const handler=(document.getElementById(`d${n}-h`)||{}).value.trim()||`${first} ${last}`;
-    const dog=(document.getElementById(`d${n}-d`)||{}).value.trim();
-    if(!dog)return;
+    const dog=(document.getElementById(`d${n}-d`)||{}).value.trim();if(!dog)return;
     const ons=[...b.querySelectorAll('.dog-ev.on input')].map(i=>i.value);
     dogs.push({handler,dog,events:ons.filter(e=>EVENTS.includes(e)).join(', '),treeing:ons.includes('treeing')?'Yes':'',ironDog:ons.includes('ironDog')?'Yes':'',bearDrag:ons.includes('bearDrag')?'Yes':''});
   });
-
-  // collect packs
   const packs=[];
   for(let i=1;i<=5;i++){
     const nameEl=document.getElementById(`p${i}-name`);if(!nameEl)continue;
     const pname=nameEl.value.trim();if(!pname)continue;
     const packDogs=[];
-    for(let d=1;d<=5;d++){
-      const dn=(document.getElementById(`p${i}-dog${d}`)||{}).value.trim();
-      if(dn)packDogs.push({dog:dn,handler:`${first} ${last}`});
-    }
+    for(let d=1;d<=5;d++){const dn=(document.getElementById(`p${i}-dog${d}`)||{}).value.trim();if(dn)packDogs.push({dog:dn,handler:`${first} ${last}`});}
     packs.push({name:pname,owner:`${first} ${last}`,dogs:packDogs});
   }
-
+  const members=collectIpadMembers();
+  const totalDue=calcCost();
   const entry={
     timestamp:new Date().toISOString(),id:'W'+Date.now(),
     firstName:first,lastName:last,fullName:`${first} ${last}`,
-    street:document.getElementById('f-street').value.trim(),
-    city:document.getElementById('f-city').value.trim(),
-    state:document.getElementById('f-state').value.trim(),
-    zip:document.getElementById('f-zip').value.trim(),
-    email:document.getElementById('f-email').value.trim(),
-    phone,
+    street,city,state,zip,address,email,phone,
     notes:document.getElementById('f-notes').value.trim(),
     dogs,packs,dogCount:dogs.length,packCount:packs.length,
-    members:collectIpadMembers(),
+    members,totalDue,
   };
-
   const btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Submitting...';
-
-  // Absolute failsafe — button always re-enables after 5s no matter what
   const failsafe=setTimeout(()=>{
-    btn.disabled=false;btn.textContent='✓ Submit Registration';
-    if(!alreadySent(entry.id)){
-      queue.push(entry);saveQueue();updateQBanner();renderQueueDetail();
-      showMsg('Timed out — entry saved to queue. Tap "Send Now" in the queue banner.','queued');
-      recent.unshift({...entry,_sent:false});
-      localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
-      renderRecent();
-      clearForm();
-    }
+    btn.disabled=false;btn.textContent='\u2713 Submit Registration';
+    if(!alreadySent(entry.id)){queue.push(entry);saveQueue();updateQBanner();renderQueueDetail();showMsg('Timed out — entry saved to queue. Tap "Send Now" in the queue banner.','queued');recent.unshift({...entry,_sent:false});localStorage.setItem(RECENT_KEY,JSON.stringify(recent));renderRecent();clearForm();}
   },5000);
-
   sendEntry(entry).then(ok=>{
-    clearTimeout(failsafe);
-    btn.disabled=false;btn.textContent='✓ Submit Registration';
-    if(ok){
-      showMsg(`✓ ${first} ${last} registered and sent!`,'ok');
-    } else if(!alreadySent(entry.id)){
-      queue.push(entry);saveQueue();updateQBanner();renderQueueDetail();
-      showMsg(`Saved — will send automatically when connected.`,'queued');
-    }
-    if(!recent.find(r=>r.id===entry.id)){
-      recent.unshift({...entry,_sent:ok});
-      if(recent.length>30)recent.pop();
-      localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
-    } else {
-      // Entry already exists (failsafe fired first) — update its _sent flag
-      const ri=recent.findIndex(r=>r.id===entry.id);
-      if(ri>=0&&ok){recent[ri]._sent=true;localStorage.setItem(RECENT_KEY,JSON.stringify(recent));}
-    }
-    renderRecent();
-    clearForm();
+    clearTimeout(failsafe);btn.disabled=false;btn.textContent='\u2713 Submit Registration';
+    if(ok){showMsg(`\u2713 ${first} ${last} registered! Total: $${totalDue}`,'ok');}
+    else if(!alreadySent(entry.id)){queue.push(entry);saveQueue();updateQBanner();renderQueueDetail();showMsg('Saved — will send automatically when connected.','queued');}
+    if(!recent.find(r=>r.id===entry.id)){recent.unshift({...entry,_sent:ok});if(recent.length>30)recent.pop();localStorage.setItem(RECENT_KEY,JSON.stringify(recent));}
+    else{const ri=recent.findIndex(r=>r.id===entry.id);if(ri>=0&&ok){recent[ri]._sent=true;localStorage.setItem(RECENT_KEY,JSON.stringify(recent));}}
+    renderRecent();clearForm();
   }).catch(()=>{
-    clearTimeout(failsafe);
-    btn.disabled=false;btn.textContent='✓ Submit Registration';
-    if(!alreadySent(entry.id)){
-      queue.push(entry);saveQueue();updateQBanner();renderQueueDetail();
-      showMsg(`Saved locally — will send when connected.`,'queued');
-      recent.unshift({...entry,_sent:false});
-      localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
-      renderRecent();
-    }
+    clearTimeout(failsafe);btn.disabled=false;btn.textContent='\u2713 Submit Registration';
+    if(!alreadySent(entry.id)){queue.push(entry);saveQueue();updateQBanner();renderQueueDetail();showMsg('Saved locally — will send when connected.','queued');recent.unshift({...entry,_sent:false});localStorage.setItem(RECENT_KEY,JSON.stringify(recent));renderRecent();}
     clearForm();
   });
 }
 
-// Tracks submission IDs already sent this session — prevents double-sends
 const SENT_KEY='uha_sent_ids';
 function getSentIds(){try{return new Set(JSON.parse(localStorage.getItem(SENT_KEY)||'[]'));}catch{return new Set();}}
 function markSent(id){try{const ids=getSentIds();ids.add(id);localStorage.setItem(SENT_KEY,JSON.stringify([...ids].slice(-200)));}catch{}}
 function alreadySent(id){return getSentIds().has(id);}
 
 function sendEntry(entry){
-  // If this ID was already successfully sent, skip silently
-  if(alreadySent(entry.id)) return Promise.resolve(true);
-
+  if(alreadySent(entry.id))return Promise.resolve(true);
   return new Promise(resolve=>{
     let resolved=false;
-    function done(ok){
-      if(resolved)return;
-      resolved=true;
-      if(ok) markSent(entry.id); // record as sent so it never fires again
-      document.getElementById('connDot').className=ok?'conn-dot online':'conn-dot';
-      resolve(ok);
-    }
-
-    // Hard timeout — if fetch doesn't respond in 8s, treat as failed (will queue)
-    const timeout=setTimeout(()=>done(false), 8000);
-
+    function done(ok){if(resolved)return;resolved=true;if(ok)markSent(entry.id);document.getElementById('connDot').className=ok?'conn-dot online':'conn-dot';resolve(ok);}
+    const timeout=setTimeout(()=>done(false),8000);
     if(!scriptUrl){clearTimeout(timeout);return done(false);}
     if(!navigator.onLine){clearTimeout(timeout);return done(false);}
-
     document.getElementById('connDot').className='conn-dot sending';
-
-    fetch(scriptUrl,{
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify(entry)
-    }).then(()=>{
-      clearTimeout(timeout);
-      done(true);
-    }).catch(()=>{
-      clearTimeout(timeout);
-      done(false);
-    });
+    fetch(scriptUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(entry)}).then(()=>{clearTimeout(timeout);done(true);}).catch(()=>{clearTimeout(timeout);done(false);});
   });
 }
 
-function saveQueue(){
-  // Before saving, remove anything already marked sent
-  queue=queue.filter(e=>!alreadySent(e.id));
-  localStorage.setItem(QUEUE_KEY,JSON.stringify(queue));
-}
+function saveQueue(){queue=queue.filter(e=>!alreadySent(e.id));localStorage.setItem(QUEUE_KEY,JSON.stringify(queue));}
 function updateQBanner(){const b=document.getElementById('qBanner'),c=document.getElementById('qCount');if(queue.length){b.classList.remove('hidden');c.textContent=`${queue.length} entr${queue.length===1?'y':'ies'} queued`;}else b.classList.add('hidden');}
 function flushQueue(){
   if(!queue.length||!scriptUrl||!navigator.onLine)return;
-  // Filter out anything already sent before attempting
-  queue=queue.filter(e=>!alreadySent(e.id));
-  saveQueue();
-  if(!queue.length){updateQBanner();return;}
-  const send=[...queue];
-  // Clear queue optimistically — failures will be re-added
-  queue=[];saveQueue();updateQBanner();renderQueueDetail();
+  queue=queue.filter(e=>!alreadySent(e.id));saveQueue();if(!queue.length){updateQBanner();return;}
+  const send=[...queue];queue=[];saveQueue();updateQBanner();renderQueueDetail();
   Promise.all(send.map(e=>sendEntry(e))).then(res=>{
     const failed=send.filter((_,i)=>!res[i]&&!alreadySent(send[i].id));
     if(failed.length){queue=[...queue,...failed];saveQueue();updateQBanner();renderQueueDetail();}
-    // Update _sent on any successfully sent entries in the recent list
     let recentChanged=false;
-    send.forEach((e,i)=>{
-      if(res[i]||alreadySent(e.id)){
-        const ri=recent.findIndex(r=>r.id===e.id);
-        if(ri>=0&&!recent[ri]._sent){recent[ri]._sent=true;recentChanged=true;}
-      }
-    });
-    if(recentChanged){
-      localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
-      renderRecent();
-    }
-    if(!failed.length&&send.length)showMsg(`✓ ${send.length} queued entr${send.length===1?'y':'ies'} sent!`,'ok');
+    send.forEach((e,i)=>{if(res[i]||alreadySent(e.id)){const ri=recent.findIndex(r=>r.id===e.id);if(ri>=0&&!recent[ri]._sent){recent[ri]._sent=true;recentChanged=true;}}});
+    if(recentChanged){localStorage.setItem(RECENT_KEY,JSON.stringify(recent));renderRecent();}
+    if(!failed.length&&send.length)showMsg(`\u2713 ${send.length} queued entr${send.length===1?'y':'ies'} sent!`,'ok');
   });
 }
 function clearQueue(){if(confirm('Clear all queued entries?')){queue=[];saveQueue();updateQBanner();renderQueueDetail();}}
@@ -469,19 +454,21 @@ function renderQueueDetail(){const el=document.getElementById('queue-detail');if
 
 function renderRecent(){
   const el=document.getElementById('recent-list'),cnt=document.getElementById('recent-count');
-  if(cnt)cnt.textContent=recent.length;
-  if(!el)return;
-  if(!recent.length){el.innerHTML='<p style="color:var(--text2);font-size:13px;">No registrations yet.</p>';return;}
+  if(cnt)cnt.textContent=recent.length;if(!el)return;
+  if(!recent.length){el.innerHTML='<p style="color:var(--text2);font-size:13px;">No registrations yet today.</p>';return;}
   el.innerHTML=recent.map(r=>{
     const t=new Date(r.timestamp).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    const ds=r.dogs.map(d=>`${d.dog} (${[d.events,d.treeing?'Treeing':'',d.ironDog?'Iron Dog':'',d.bearDrag?'Bear Drag':''].filter(Boolean).join(', ')||'—'})`).join('; ');
+    const ds=r.dogs.map(d=>`${d.dog} (${[d.events,d.treeing==='Yes'?'Treeing':'',d.ironDog==='Yes'?'Iron Dog':'',d.bearDrag==='Yes'?'Bear Drag':''].filter(Boolean).join(', ')||'\u2014'})`).join('; ');
     const ps=r.packs&&r.packs.length?r.packs.map(p=>p.name).join(', '):'';
+    const contact=[r.phone,r.email].filter(Boolean).join(' \u00b7 ');
     return`<div class="recent-item"><div class="rdot ${r._sent?'':'pend'}"></div><div style="flex:1;min-width:0;">
-      <div style="font-size:14px;font-weight:700;">${r.fullName}</div>
-      <div style="font-size:11px;color:var(--text2);margin-top:2px;">${t} · ${r.phone}</div>
-      ${ds?`<div style="font-size:11px;color:var(--text2);margin-top:3px;">🐕 ${ds}</div>`:''}
+      <div style="font-size:14px;font-weight:700;">${r.fullName}${r.totalDue?' <span style=\"color:var(--accent);font-size:13px;\">$'+r.totalDue+'</span>':''}</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px;">${t} \u00b7 ${contact}</div>
+      ${r.address?`<div style="font-size:11px;color:var(--text3);margin-top:1px;">\ud83d\udccd ${r.address}</div>`:''}
+      ${ds?`<div style="font-size:11px;color:var(--text2);margin-top:3px;">\ud83d\udc15 ${ds}</div>`:''}
       ${ps?`<div style="font-size:11px;color:var(--purple);margin-top:2px;">Bear Pack: ${ps}</div>`:''}
-      ${!r._sent?'<div style="font-size:11px;color:var(--accent);margin-top:2px;">📤 Queued — not yet sent</div>':''}
+      ${r.members&&r.members.length?`<div style="font-size:11px;color:var(--green);margin-top:2px;">\ud83e\ude9a Members: ${r.members.join(', ')}</div>`:''}
+      ${!r._sent?'<div style="font-size:11px;color:var(--accent);margin-top:2px;">\ud83d\udce4 Queued \u2014 not yet sent</div>':''}
     </div></div>`;
   }).join('');
 }
@@ -489,35 +476,17 @@ function clearRecent(){if(confirm('Clear recent list?')){recent=[];localStorage.
 
 function clearForm(){
   ['f-first','f-last','f-street','f-city','f-state','f-zip','f-email','f-phone','f-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  
-  document.getElementById('ipad-mem-list').innerHTML='';
-  ipadMemCount=0;
+  document.getElementById('ipad-mem-list').innerHTML='';ipadMemCount=0;
   document.getElementById('dog-list').innerHTML='';dogCount=1;
   document.getElementById('addDogBtn').style.display='';addDog();
   document.getElementById('pack-list').innerHTML='';packCount=0;
   document.getElementById('addPackBtn').style.display='';
-  document.getElementById('f-first').focus();
+  calcCost();document.getElementById('f-first').focus();
 }
-
-function saveUrl(){
-  const v=(document.getElementById('su-url').value||'').trim();
-  if(!v||!v.startsWith('http')){setUrlMsg('Enter a valid URL starting with https://','red');return;}
-  if(v===DEFAULT_URL){setUrlMsg('That is already the default URL — no change needed.','green');return;}
-  scriptUrl=v;localStorage.setItem(URL_KEY,v);
-  setUrlMsg('✓ URL updated! Tap Test Connection to verify.','green');checkConn();
-}
-function testConn(){
-  if(!scriptUrl){setUrlMsg('Save a URL first.','orange');return;}
-  setUrlMsg('Testing...','var(--text2)');
-  fetch(scriptUrl+'?action=ping').then(()=>setUrlMsg('✓ Connected!','green')).catch(()=>setUrlMsg('Could not connect — check URL and WiFi.','red'));
-}
+function saveUrl(){const v=(document.getElementById('su-url').value||'').trim();if(!v||!v.startsWith('http')){setUrlMsg('Enter a valid URL starting with https://','red');return;}if(v===DEFAULT_URL){setUrlMsg('That is already the default URL \u2014 no change needed.','green');return;}scriptUrl=v;localStorage.setItem(URL_KEY,v);setUrlMsg('\u2713 URL updated! Tap Test Connection to verify.','green');checkConn();}
+function testConn(){if(!scriptUrl){setUrlMsg('Save a URL first.','orange');return;}setUrlMsg('Testing...','var(--text2)');fetch(scriptUrl+'?action=ping').then(()=>setUrlMsg('\u2713 Connected!','green')).catch(()=>setUrlMsg('Could not connect \u2014 check URL and WiFi.','red'));}
 function setUrlMsg(t,c){const el=document.getElementById('url-msg');if(el){el.textContent=t;el.style.color=c==='green'?'var(--green)':c==='red'?'var(--red)':'var(--text2)';}}
-
-function showMsg(text,type){
-  const el=document.getElementById('msg');el.textContent=text;el.className=`msg ${type}`;el.style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(type!=='err')setTimeout(()=>{el.style.display='none';},7000);
-}
+function showMsg(text,type){const el=document.getElementById('msg');el.textContent=text;el.className=`msg ${type}`;el.style.display='block';window.scrollTo({top:0,behavior:'smooth'});if(type!=='err')setTimeout(()=>{el.style.display='none';},7000);}
 
 init();
 </script>
